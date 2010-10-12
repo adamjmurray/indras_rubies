@@ -1,0 +1,1 @@
+require 'indras_rubies'
