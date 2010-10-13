@@ -54,6 +54,12 @@ module Indra
       end
     end
     
+    describe '#coefficients' do
+      it 'should be [a,b,c,d]' do
+        subject.coefficients.should == [a,b,c,d]
+      end
+    end
+    
     
     describe '#==' do
     
@@ -245,7 +251,7 @@ module Indra
     
     describe '#normalize' do
       
-      it 'should multiply all coeffecieints by 1/sqrt(determinant)' do
+      it 'should multiply all coefficieints by 1/sqrt(determinant)' do
         det_sqrt = Math.sqrt(subject.determinant)
         normal_form = subject.normalize
         normal_form.should == MobiusTransformation.new(a/det_sqrt, b/det_sqrt, c/det_sqrt, d/det_sqrt)
@@ -292,6 +298,42 @@ module Indra
         subject.transform_point(-d/c).should == INFINITY
       end
       
+    end
+    
+    
+    describe '#fixed_points' do
+      
+      it 'should be the two solutions of z=(az+b)/(cz+d)' do
+        # for a=1,b=2,c=3,d=4 this should be (-3 +/- 5.745)/6 == [0.4575, -1.4575]
+        fp1,fp2 = MobiusTransformation.new(1,2,3,4).fixed_points
+        fp1.should be_close  0.4575 ,  0.0001
+        fp2.should be_close -1.4575 ,  0.0001
+      end
+      
+      it 'should be ((a-d) plus/minus sqrt(trace**2 - 4))/2c for normalized transformations' do
+        subject.normalize!
+        a,b,c,d = subject.coefficients
+        fp1,fp2 = subject.fixed_points
+        sqtr4 = Math.sqrt(subject.trace**2 - 4)        
+        fp1.should be_close (a-d + sqtr4)/(2*c), 0.001
+        fp2.should be_close (a-d - sqtr4)/(2*c), 0.001
+      end      
+      
+      it' should be NAN for the identity transformation' do
+        # This evaluates to 0/0, which is NAN
+        # It makes sense because all points are fixed points in the indentity transformation, 
+        # so there's no specific solution to return
+        fp1,fp2 = MobiusTransformation::IDENTITY.fixed_points
+        fp1.should be_nan
+        fp2.should be_nan
+      end
+      
+    end
+    
+    describe '#to_s' do
+      it 'should be MobiusTransformation[[a,b],[c,d]]' do
+        subject.to_s.should == "MobiusTransformation[[#{a},#{b}], [#{c},#{d}]]"
+      end
     end
     
   end

@@ -31,6 +31,10 @@ module Indra
       @matrix[1,1]
     end
     
+    def coefficients
+      [a,b,c,d]
+    end
+    
     def ==(other)
       if other.respond_to? :matrix
         other.matrix == @matrix
@@ -93,6 +97,19 @@ module Indra
       else
         (a*z + b)/(c*z + d)
       end
+    end
+    
+    def fixed_points
+      # See Ingra's Pearls Note 3.3 on page 78      
+      numerator_left = a-d # the numerator on the left side of plus/minus
+      numerator_right = Math.sqrt((d-a)**2 + 4*b*c)
+      denominator = 2*c      
+      [(numerator_left + numerator_right)/denominator,
+       (numerator_left - numerator_right)/denominator]
+    end
+    
+    def to_s
+      "MobiusTransformation[[#{a},#{b}], [#{c},#{d}]]"
     end
 
     ############################
