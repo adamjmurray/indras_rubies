@@ -18,6 +18,17 @@ module Indra
       @center, @radius = center, radius
     end
     
+    def ==(other)
+      if other.respond_to? :center and other.respond_to? :radius
+        center == other.center and radius == other.radius
+      else
+        false
+      end
+    end
+    
+    def to_s
+      "Circle[@center=#{center} @radius=#{radius}]"
+    end
   end
   
 end

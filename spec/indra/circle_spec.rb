@@ -38,7 +38,29 @@ module Indra
         subject.r.should == radius    
       end
     end
-            
+    
+    describe '#==' do
+      it 'should be true when comparing the same object' do
+        subject.should == subject
+      end
+      it 'should be true when comparing objects with the same center and radius' do
+        subject.should == Circle.new(subject.center, subject.radius)
+      end
+      it 'should be false when comparing objects with different centers and radii' do
+        subject.should_not == Circle.new(subject.center+1, subject.radius)
+        subject.should_not == Circle.new(subject.center+1, subject.radius+1)
+      end
+      it' should be false when comapring and object with no center or radius' do
+        subject.should_not == subject.center
+      end
+    end
+    
+    describe '#to_s' do
+      it 'should be "Circle[@center=#{center} @radius=#{radius}]"' do
+        subject.to_s.should == "Circle[@center=#{center} @radius=#{radius}]"
+      end
+    end
+                  
   end
   
 end
