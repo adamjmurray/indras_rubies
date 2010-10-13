@@ -111,101 +111,29 @@ end
 #################################################################################
 # Monkey Patches to Numeric classes so they place nice with MobiusTransformations
 
-class Fixnum
-  
-  alias non_mobius_transformation_multiply *
-  def *(other)
-    if other.is_a? Indra::MobiusTransformation
-      other * self
-    else 
-      non_mobius_transformation_multiply(other)
+for klass in [Fixnum,Rational,Float,Complex] do
+  klass.class_eval do # metaprogramming FTW!
+    
+    alias non_mobius_transformation_multiply *
+    def *(other)
+      if other.is_a? Indra::MobiusTransformation
+        other * self
+      else 
+        non_mobius_transformation_multiply(other)
+      end
     end
-  end
-  
-  alias non_mobius_transformation_divide /
-  def /(other)
-    if other.is_a? Indra::MobiusTransformation
-      other.inverse * self
-    elsif other == 0
-      # And while we're in here let's fix divide by 0 to work like it should 
-      Float::INFINITY
-    else
-      non_mobius_transformation_divide(other)
-    end
-  end
 
+    alias non_mobius_transformation_divide /
+    def /(other)
+      if other.is_a? Indra::MobiusTransformation
+        other.inverse * self
+      elsif other == 0
+        # And while we're in here let's fix divide by 0 to work like it should 
+        Float::INFINITY
+      else
+        non_mobius_transformation_divide(other)
+      end
+    end
+    
+  end
 end
-
-class Rational
-  
-  alias non_mobius_transformation_multiply *
-  def *(other)
-    if other.is_a? Indra::MobiusTransformation
-      other * self
-    else 
-      non_mobius_transformation_multiply(other)
-    end
-  end
-  
-  alias non_mobius_transformation_divide /
-  def /(other)
-    if other.is_a? Indra::MobiusTransformation
-      other.inverse * self    
-    elsif other == 0
-      # And while we're in here let's fix divide by 0 to work like it should 
-      Float::INFINITY
-    else
-      non_mobius_transformation_divide(other)
-    end
-  end
-
-end
-
-class Float
-  
-  alias non_mobius_transformation_multiply *
-  def *(other)
-    if other.is_a? Indra::MobiusTransformation
-      other * self
-    else 
-      non_mobius_transformation_multiply(other)
-    end
-  end
-  
-  alias non_mobius_transformation_divide /
-  def /(other)
-    if other.is_a? Indra::MobiusTransformation
-      other.inverse * self
-    else 
-      non_mobius_transformation_divide(other)
-    end
-  end
-  
-end
-
-
-class Complex
-
-  alias non_mobius_transformation_multiply *
-  def *(other)
-    if other.is_a? Indra::MobiusTransformation
-      other * self
-    else 
-      non_mobius_transformation_multiply(other)
-    end
-  end
-
-  alias non_mobius_transformation_divide /
-  def /(other)
-    if other.is_a? Indra::MobiusTransformation
-      other.inverse * self
-    elsif other == 0
-      # And while we're in here let's fix divide by 0 to work like it should 
-      Float::INFINITY      
-    else 
-      non_mobius_transformation_divide(other)
-    end
-  end
-  
-end
-
