@@ -85,6 +85,16 @@ module Indra
       end
     end
     
+    def transform_point(z)
+      if z == INFINITY   
+        # see Indra's Pearls page 75
+        # By applying an algebraic reduction for this case we can avoid the undefined value INFINITY/INFINITY
+        a/c  
+      else
+        (a*z + b)/(c*z + d)
+      end
+    end
+
     ############################
     private
     

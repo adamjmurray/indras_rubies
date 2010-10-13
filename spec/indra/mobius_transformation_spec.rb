@@ -4,12 +4,17 @@ module Indra
   
   describe MobiusTransformation do
     
-    let(:a) { 1 }
-    let(:b) { 2 }
-    let(:c) { 3 }
-    let(:d) { 4 }
+    let(:a) { Complex(1) }
+    let(:b) { Complex(2) }
+    let(:c) { Complex(3) }
+    let(:d) { Complex(4) }
     subject { MobiusTransformation.new(a,b,c,d) }
     let(:t) { MobiusTransformation.new(2,3,4,5) }
+  
+    let(:p1){ Complex( 0,0) }
+    let(:p2){ Complex( 1,1) }
+    let(:p3){ Complex(-2,3) }
+    let(:points){ [p1,p2,p3] }
   
   
     describe 'IDENTITY' do
@@ -262,6 +267,31 @@ module Indra
         subject.normalize!
         normal_form.should == subject
       end
+    end
+    
+    
+    describe '#transform_point' do
+      
+      it 'should not change the point if the transformation is the identity transformation' do
+        for z in points
+          MobiusTransformation::IDENTITY.transform_point(z).should == z
+        end
+      end
+      
+      it 'should transform point z using the formula T(z) = (T.a*z + T.b)/(T.c*z + T.d)' do
+        for z in points
+          subject.transform_point(z).should == (a*z + b)/(c*z + d)
+        end
+      end
+      
+      it 'should evaluate to a/c when z is infinity' do
+        subject.transform_point(INFINITY).should == (a/c)
+      end
+      
+      it 'should evaluate to infinity when z is -d/c' do
+        subject.transform_point(-d/c).should == INFINITY
+      end
+      
     end
     
   end
