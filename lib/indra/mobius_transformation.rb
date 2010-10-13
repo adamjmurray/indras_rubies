@@ -91,12 +91,22 @@ module Indra
     
     def transform_point(z)
       if z == INFINITY   
-        # see Indra's Pearls page 75
+        # see Indra's Pearl's page 75
         # By applying an algebraic reduction for this case we can avoid the undefined value INFINITY/INFINITY
         a/c  
       else
         (a*z + b)/(c*z + d)
       end
+    end
+    
+    def transform_circle(circle)
+      # see Indra's Pearl's box 10, page 91
+      p = circle.center
+      r = circle.radius
+      z = p - (r**2)/(d/c + p).conj
+      q = transform_point(z)
+      s = ( q - transform_point(p+r) ).abs
+      Circle.new(q,s)
     end
     
     def fixed_points

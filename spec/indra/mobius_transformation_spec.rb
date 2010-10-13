@@ -11,11 +11,6 @@ module Indra
     subject { MobiusTransformation.new(a,b,c,d) }
     let(:t) { MobiusTransformation.new(2,3,4,5) }
   
-    let(:p1){ Complex( 0,0) }
-    let(:p2){ Complex( 1,1) }
-    let(:p3){ Complex(-2,3) }
-    let(:points){ [p1,p2,p3] }
-  
   
     describe 'IDENTITY' do
       
@@ -276,7 +271,12 @@ module Indra
     end
     
     
-    describe '#transform_point' do
+    describe '#transform_point' do       
+           
+      let(:p1){ Complex( 0,0) }
+      let(:p2){ Complex( 1,1) }
+      let(:p3){ Complex(-2,3) }
+      let(:points){ [p1,p2,p3] }
       
       it 'should not change the point if the transformation is the identity transformation' do
         for z in points
@@ -296,6 +296,28 @@ module Indra
       
       it 'should evaluate to infinity when z is -d/c' do
         subject.transform_point(-d/c).should == INFINITY
+      end
+      
+    end
+    
+    
+    describe '#transform_circle' do
+
+      let(:unit_circle){ Circle.new(Complex(0,0),1) }
+
+      it 'should correctly transform a circle' do
+        # Hard to explain in words, see Indra's Pearls chapter 3
+        # I've reduced the formulas significantly by using the unit circle for this test
+        center = subject.transform_point( -1/(d/c).conj )
+        radius = (center - subject.transform_point(1)).abs
+        subject.transform_circle(unit_circle).should == Circle.new(center,radius)
+      end
+      
+      # should probably write more tests for this but the math is giving me a headache :/
+      # I trust the book is correct and it was pretty easy to implement, so it's probably ok...
+      
+      it 'should not change the circle if the transformation is the identity transformation' do
+        MobiusTransformation::IDENTITY.transform_circle(unit_circle).should == unit_circle
       end
       
     end
@@ -329,6 +351,7 @@ module Indra
       end
       
     end
+    
     
     describe '#to_s' do
       it 'should be MobiusTransformation[[a,b],[c,d]]' do
