@@ -11,6 +11,7 @@ module Indra
     subject { MobiusTransformation.new(a,b,c,d) }
     let(:t) { MobiusTransformation.new(2,3,4,5) }
   
+  
     describe 'IDENTITY' do
       
       it 'should have the coefficients 1,0,0,1' do
@@ -82,39 +83,49 @@ module Indra
       end
       
       context 'when multiplying the subject by a scalar' do
+
+        def subject_times_scalar_should_be_correct(scalar)
+          (subject * scalar).should == MobiusTransformation.new(scalar*subject.a, scalar*subject.b, scalar*subject.c, scalar*subject.d)
+        end
       
         it 'should multiply by a scalar Fixnum' do
-          k = 4
-          (subject * k).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          subject_times_scalar_should_be_correct( 4 )
+        end
+        
+        it 'should multiply by a scalar Rational' do
+          subject_times_scalar_should_be_correct( Rational(4,3) )
         end
         
         it 'should multiply by a scalar Float' do
-          k = 4.5
-          (subject * k).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          subject_times_scalar_should_be_correct( 4.5 )
         end
 
         it 'should multiply by a scalar Complex' do
-          k = Complex(4,1)
-          (subject * k).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          subject_times_scalar_should_be_correct( Complex(4,1) )
         end
         
       end
       
       context 'when mutiplying a scalar by the subject' do
         
+        def scalar_times_subject_should_be_correct(scalar)
+          (scalar * subject).should == MobiusTransformation.new(scalar*subject.a, scalar*subject.b, scalar*subject.c, scalar*subject.d)
+        end        
+        
         it 'should multiply by a scalar Fixnum' do
-          k = 4
-          (k * subject).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          scalar_times_subject_should_be_correct( 4 )
+        end
+        
+        it 'should multiply by a scalar Rational' do
+          scalar_times_subject_should_be_correct( Rational(4,3) )
         end
         
         it 'should multiply by a scalar Float' do
-          k = 4.5
-          (k * subject).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          scalar_times_subject_should_be_correct( 4.5 )
         end
 
         it 'should multiply by a scalar Complex' do
-          k = Complex(4,1)
-          (k * subject).should == MobiusTransformation.new(k*subject.a, k*subject.b, k*subject.c, k*subject.d)
+          scalar_times_subject_should_be_correct( Complex(4,1) )
         end
         
       end      
@@ -131,26 +142,37 @@ module Indra
       context 'when dividing the subject by a scalar' do
         
         it 'should multiply by the inverse of a scalar Fixnum (and not do integer division)' do
-          k = 4
-          (subject / k).should == (subject * 1.0/k)
+          (subject / 4).should == (subject * 1/4.0)
+        end
+
+        it 'should multiply by the inverse of a scalar Rational' do
+          (subject / Rational(4,3)).should == (subject * Rational(3,4))
         end
         
         it 'should multiply by the inverse of a scalar Float' do
-          k = 4.0
-          (subject / k).should == (subject * 1/k)
+          (subject / 4.0).should == (subject * 1/4.0)
         end
         
         it 'should multiply by the inverse of a scalar Complex' do
-          k = Complex(4,1)
-          (subject / k).should == (subject * 1/k)
+          (subject / Complex(4,1)).should == (subject * 1/Complex(4,1))
         end
         
         it 'should result in infinity for all coefficients when divided by 0' do
           inf = Float::INFINITY
           infT = MobiusTransformation.new(inf,inf,inf,inf)
           (subject / 0).should == infT
-          (subject / 0.0).should == infT
-          (subject / Complex(0,0)).should == infT
+          (MobiusTransformation.new(Rational(1),2,3,4) / Rational(0)).should == infT
+          (MobiusTransformation.new(1.0,2,3,4)  / 0.0).should == infT
+          (MobiusTransformation.new(Complex(1,0),2,3,4) / Complex(0,0)).should == infT
+        end
+        
+        it 'should result in zero for all coefficients when divided by infinity' do
+          inf = Float::INFINITY
+          zeroT = MobiusTransformation.new(0,0,0,0)
+          (subject / inf).should == zeroT
+          (MobiusTransformation.new(Rational(1),2,3,4) / inf).should == zeroT
+          (MobiusTransformation.new(1.0,2,3,4)  / inf).should == zeroT
+          (MobiusTransformation.new(Complex(1,0),2,3,4) / Complex(inf)).should == zeroT
         end
         
       end
@@ -158,18 +180,19 @@ module Indra
       context 'when diving a scalar by the subject' do
                 
         it 'should multiply a scalar Fixnum by the inverse transformation' do
-          k = 4
-          (k / subject).should == (k * subject.inverse)
+          (4 / subject).should == (4 * subject.inverse)
         end
         
+        it 'should multiply a scalar Fixnum by the inverse transformation' do
+          (Rational(4,3) / subject).should == (Rational(4,3) * subject.inverse)
+        end        
+        
         it 'should multiply a scalar Float by the inverse transformation' do
-          k = 4.0
-          (k / subject).should == (k * subject.inverse)
+          (4.0 / subject).should == (4.0 * subject.inverse)
         end
         
         it 'should multiply a scalar Complex by the inverse transformation' do
-          k = Complex(4,1)
-          (k / subject).should == (k * subject.inverse)
+          (Complex(4,1) / subject).should == (Complex(4,1) * subject.inverse)
         end        
         
       end

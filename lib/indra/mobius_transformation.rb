@@ -1,9 +1,6 @@
 module Indra
 
-  # We will be using matrixes of the form [[a,b],[c,d]] to represent Mobius transformations
-  # so let's provide a convenient constructor and accessors a,b,c,d.
-  # Additionally we will coerce everything to floats so that division by 0 evaluates to Infinity, 
-  # as we expect on the Riemann sphere (http://en.wikipedia.org/wiki/Riemann_sphere)
+  #  Mobius transformations are basically 2x2 matrixes of the form [[a,b],[c,d]]
   class MobiusTransformation
     
     def initialize(a,b,c,d)
@@ -114,6 +111,56 @@ end
 #################################################################################
 # Monkey Patches to Numeric classes so they place nice with MobiusTransformations
 
+class Fixnum
+  
+  alias non_mobius_transformation_multiply *
+  def *(other)
+    if other.is_a? Indra::MobiusTransformation
+      other * self
+    else 
+      non_mobius_transformation_multiply(other)
+    end
+  end
+  
+  alias non_mobius_transformation_divide /
+  def /(other)
+    if other.is_a? Indra::MobiusTransformation
+      other.inverse * self
+    elsif other == 0
+      # And while we're in here let's fix divide by 0 to work like it should 
+      Float::INFINITY
+    else
+      non_mobius_transformation_divide(other)
+    end
+  end
+
+end
+
+class Rational
+  
+  alias non_mobius_transformation_multiply *
+  def *(other)
+    if other.is_a? Indra::MobiusTransformation
+      other * self
+    else 
+      non_mobius_transformation_multiply(other)
+    end
+  end
+  
+  alias non_mobius_transformation_divide /
+  def /(other)
+    if other.is_a? Indra::MobiusTransformation
+      other.inverse * self    
+    elsif other == 0
+      # And while we're in here let's fix divide by 0 to work like it should 
+      Float::INFINITY
+    else
+      non_mobius_transformation_divide(other)
+    end
+  end
+
+end
+
 class Float
   
   alias non_mobius_transformation_multiply *
@@ -152,36 +199,13 @@ class Complex
   def /(other)
     if other.is_a? Indra::MobiusTransformation
       other.inverse * self
-    else 
-      non_mobius_transformation_divide(other)
-    end
-  end
-  
-end
-
-
-class Fixnum
-  
-  alias non_mobius_transformation_multiply *
-  def *(other)
-    if other.is_a? Indra::MobiusTransformation
-      other * self
-    else 
-      non_mobius_transformation_multiply(other)
-    end
-  end
-  
-  alias non_mobius_transformation_divide /
-  def /(other)
-    if other.is_a? Indra::MobiusTransformation
-      other.inverse * self
     elsif other == 0
       # And while we're in here let's fix divide by 0 to work like it should 
-      # (like it does for Float and Complex, namely to evaluate to Float::INFINITY)      
-      self.to_f / 0
-    else
+      Float::INFINITY      
+    else 
       non_mobius_transformation_divide(other)
     end
   end
-
+  
 end
+
