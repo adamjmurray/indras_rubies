@@ -158,8 +158,7 @@ module Indra
         end
         
         it 'should result in infinity for all coefficients when divided by 0' do
-          inf = Float::INFINITY
-          infT = MobiusTransformation.new(inf,inf,inf,inf)
+          infT = MobiusTransformation.new(INFINITY,INFINITY,INFINITY,INFINITY)
           (subject / 0).should == infT
           (MobiusTransformation.new(Rational(1),2,3,4) / Rational(0)).should == infT
           (MobiusTransformation.new(1.0,2,3,4)  / 0.0).should == infT
@@ -167,12 +166,11 @@ module Indra
         end
         
         it 'should result in zero for all coefficients when divided by infinity' do
-          inf = Float::INFINITY
           zeroT = MobiusTransformation.new(0,0,0,0)
-          (subject / inf).should == zeroT
-          (MobiusTransformation.new(Rational(1),2,3,4) / inf).should == zeroT
-          (MobiusTransformation.new(1.0,2,3,4)  / inf).should == zeroT
-          (MobiusTransformation.new(Complex(1,0),2,3,4) / Complex(inf)).should == zeroT
+          (subject / INFINITY).should == zeroT
+          (MobiusTransformation.new(Rational(1),2,3,4) / INFINITY).should == zeroT
+          (MobiusTransformation.new(1.0,2,3,4)  / INFINITY).should == zeroT
+          (MobiusTransformation.new(Complex(1,0),2,3,4) / Complex(INFINITY)).should == zeroT
         end
         
       end

@@ -128,8 +128,12 @@ for klass in [Fixnum,Rational,Float,Complex] do
       if other.is_a? Indra::MobiusTransformation
         other.inverse * self
       elsif other == 0
-        # And while we're in here let's fix divide by 0 to work like it should 
-        Float::INFINITY
+        # And while we're in here let's fix divide by 0 to work like it should         
+        if self == 0
+          Float::NAN
+        else
+          Float::INFINITY
+        end
       else
         non_mobius_transformation_divide(other)
       end
