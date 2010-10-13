@@ -46,6 +46,10 @@ module Indra
       @matrix.determinant
     end
     
+    def trace
+      @matrix.trace
+    end
+    
     def normalize      
       MobiusTransformation.new(*normalized_coeffecients)
     end
@@ -71,6 +75,19 @@ module Indra
       end
     end
     
+    def /(other)
+      if other.respond_to? :matrix
+        MobiusTransformation.new(@matrix * other.matrix.inverse, nil,nil,nil)
+      else
+        if other.is_a? Fixnum
+          # I can't imagine a case where I'd want to actually perform integer division
+          # on a transformation matrix, so we'll force it to use floating point:
+          other = other.to_f
+        end
+        MobiusTransformation.new(a/other, b/other, c/other, d/other)
+      end
+    end
+    
     ############################
     private
     
@@ -90,4 +107,81 @@ module Indra
     
   end
   
+end
+
+
+
+#################################################################################
+# Monkey Patches to Numeric classes so they place nice with MobiusTransformations
+
+class Float
+  
+  alias non_mobius_transformation_multiply *
+  def *(other)
+    if other.is_a? Indra::MobiusTransformation
+      other * self
+    else 
+      non_mobius_transformation_multiply(other)
+    end
+  end
+  
+  alias non_mobius_transformation_divide /
+  def /(other)
+    if other.is_a? Indra::MobiusTransformation
+      other.inverse * self
+    else 
+      non_mobius_transformation_divide(other)
+    end
+  end
+  
+end
+
+
+class Complex
+
+  alias non_mobius_transformation_multiply *
+  def *(other)
+    if other.is_a? Indra::MobiusTransformation
+      other * self
+    else 
+      non_mobius_transformation_multiply(other)
+    end
+  end
+
+  alias non_mobius_transformation_divide /
+  def /(other)
+    if other.is_a? Indra::MobiusTransformation
+      other.inverse * self
+    else 
+      non_mobius_transformation_divide(other)
+    end
+  end
+  
+end
+
+
+class Fixnum
+  
+  alias non_mobius_transformation_multiply *
+  def *(other)
+    if other.is_a? Indra::MobiusTransformation
+      other * self
+    else 
+      non_mobius_transformation_multiply(other)
+    end
+  end
+  
+  alias non_mobius_transformation_divide /
+  def /(other)
+    if other.is_a? Indra::MobiusTransformation
+      other.inverse * self
+    elsif other == 0
+      # And while we're in here let's fix divide by 0 to work like it should 
+      # (like it does for Float and Complex, namely to evaluate to Float::INFINITY)      
+      self.to_f / 0
+    else
+      non_mobius_transformation_divide(other)
+    end
+  end
+
 end
