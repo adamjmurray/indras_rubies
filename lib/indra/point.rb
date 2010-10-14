@@ -1,18 +1,18 @@
 module Indra
   
+  Point = Complex
+
   # Points are just complex numbers. 
-  # This class exists to help make code more readable.
+  # This helps make code more readable.  
   class Point
-    def self.[](x,y)
-      Complex(x,y)
-    end
+    alias x real
+    alias y imag
   end
   
 end
 
-
-# Additionally we'll add x and y methods to Complex so it acts more like a Point
-class Complex
-  alias x real
-  alias y imag
+module Kernel
+  def Point(x,y)
+    Complex(x,y)
+  end
 end

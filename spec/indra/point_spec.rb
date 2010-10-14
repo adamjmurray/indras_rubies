@@ -6,9 +6,9 @@ module Indra
   
     let(:x) { 1 }
     let(:y) { 2 }
-    subject { Point[x,y] }
+    subject { Point(x,y) }
   
-    describe '[x,y]' do
+    describe 'Point(x,y)' do
       it 'should construct a new complex number x+y*I' do
         subject.class.should be Complex
         subject.should == Complex(x,y)        

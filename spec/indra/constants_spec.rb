@@ -30,8 +30,8 @@ module Indra
   end
   
   describe 'ORIGIN' do
-    it 'should be the Point [0,0]' do
-      ORIGIN.should == Point[0,0]
+    it 'should be the Point(0,0)' do
+      ORIGIN.should == Point(0,0)
     end
   end
   
