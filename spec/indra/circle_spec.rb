@@ -8,17 +8,24 @@ module Indra
     let(:radius) { 3 }
     subject { Circle.new(center,radius) }
     
-    it 'should enforce that the center is a Complex number' do
-      lambda{ Circle.new(radius, radius) }.should raise_error(ArgumentError)
-    end
-    
-    it 'should enforce that the radius is a one-dimensional (non-complex) number' do
-      lambda{ Circle.new(center, center) }.should raise_error(ArgumentError)
-    end
-    
     it 'should be immutable' do
       lambda{ subject.center = center }.should raise_error(NoMethodError)
       lambda{ subject.radius = radius }.should raise_error(NoMethodError)
+    end
+
+    describe 'new' do
+      it 'should convert the center to a Complex number when possible' do
+        Circle.new([5,4], 3).should == Circle.new(Complex(5,4), 3)
+        Circle.new(5, 3).should == Circle.new(Complex(5,0), 3)
+      end
+    
+      it 'should enforce that the center is a Complex number' do
+        lambda{ Circle.new("not a center", radius) }.should raise_error(ArgumentError)
+      end
+    
+      it 'should enforce that the radius is a one-dimensional (non-complex) number' do
+        lambda{ Circle.new(center, center) }.should raise_error(ArgumentError)
+      end
     end
     
     describe '#center' do
@@ -27,6 +34,18 @@ module Indra
       end
       it 'should be aliased by #c' do
         subject.c.should == center        
+      end
+    end
+    
+    describe '#x' do 
+      it "should return center's real component" do
+        subject.x.should == subject.center.real
+      end
+    end
+    
+    describe '#y' do
+      it "should return center's imaginary component" do
+        subject.y.should == subject.center.imag
       end
     end
     
