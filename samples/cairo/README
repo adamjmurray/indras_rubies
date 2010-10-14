@@ -1,0 +1,3 @@
+Samples in this folder require the cairo gem, ruby bindings for the cross platform 2-D graphics library "Cairo"
+
+See http://cairographics.org/rcairo/
