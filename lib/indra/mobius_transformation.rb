@@ -109,6 +109,17 @@ module Indra
       Circle.new(q,s)
     end
     
+    def [](shape)
+      case shape
+      when Point
+        transform_point(shape)
+      when Circle
+        transform_circle(shape)
+      else
+        raise ArgumentError
+      end
+    end
+    
     def fixed_points
       # See Ingra's Pearls Note 3.3 on page 78      
       numerator_left = a-d # the numerator on the left side of plus/minus

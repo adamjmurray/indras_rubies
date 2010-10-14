@@ -271,58 +271,6 @@ module Indra
     end
     
     
-    describe '#transform_point' do       
-           
-      let(:p1){ Complex( 0,0) }
-      let(:p2){ Complex( 1,1) }
-      let(:p3){ Complex(-2,3) }
-      let(:points){ [p1,p2,p3] }
-      
-      it 'should not change the point if the transformation is the identity transformation' do
-        for z in points
-          MobiusTransformation::IDENTITY.transform_point(z).should == z
-        end
-      end
-      
-      it 'should transform point z using the formula T(z) = (T.a*z + T.b)/(T.c*z + T.d)' do
-        for z in points
-          subject.transform_point(z).should == (a*z + b)/(c*z + d)
-        end
-      end
-      
-      it 'should evaluate to a/c when z is infinity' do
-        subject.transform_point(INFINITY).should == (a/c)
-      end
-      
-      it 'should evaluate to infinity when z is -d/c' do
-        subject.transform_point(-d/c).should == INFINITY
-      end
-      
-    end
-    
-    
-    describe '#transform_circle' do
-
-      let(:unit_circle){ Circle.new(Complex(0,0),1) }
-
-      it 'should correctly transform a circle' do
-        # Hard to explain in words, see Indra's Pearls chapter 3
-        # I've reduced the formulas significantly by using the unit circle for this test
-        center = subject.transform_point( -1/(d/c).conj )
-        radius = (center - subject.transform_point(1)).abs
-        subject.transform_circle(unit_circle).should == Circle.new(center,radius)
-      end
-      
-      # should probably write more tests for this but the math is giving me a headache :/
-      # I trust the book is correct and it was pretty easy to implement, so it's probably ok...
-      
-      it 'should not change the circle if the transformation is the identity transformation' do
-        MobiusTransformation::IDENTITY.transform_circle(unit_circle).should == unit_circle
-      end
-      
-    end
-    
-    
     describe '#fixed_points' do
       
       it 'should be the two solutions of z=(az+b)/(cz+d)' do
@@ -356,6 +304,63 @@ module Indra
     describe '#to_s' do
       it 'should be MobiusTransformation[[a,b],[c,d]]' do
         subject.to_s.should == "MobiusTransformation[[#{a},#{b}], [#{c},#{d}]]"
+      end
+    end
+    
+    
+    context 'applying the transformation' do 
+      
+      let(:p1){ Point(0,0) }
+      let(:p2){ Point(1,1) }
+      let(:p3){ Point(-2,3) }
+      let(:points){ [p1,p2,p3] }
+
+      let(:unit_circle){ Circle.new(ORIGIN,1) }
+
+      describe '#transform_point' do       
+        it 'should not change the point if the transformation is the identity transformation' do
+          for z in points
+            MobiusTransformation::IDENTITY.transform_point(z).should == z
+          end
+        end
+        
+        it 'should transform point z using the formula T(z) = (T.a*z + T.b)/(T.c*z + T.d)' do
+          for z in points
+            subject.transform_point(z).should == (a*z + b)/(c*z + d)
+          end
+        end
+        
+        it 'should evaluate to a/c when z is infinity' do
+          subject.transform_point(INFINITY).should == (a/c)
+        end
+        
+        it 'should evaluate to infinity when z is -d/c' do
+          subject.transform_point(-d/c).should == INFINITY
+        end
+      end
+
+      describe '#transform_circle' do
+        it 'should correctly transform a circle' do
+          # Hard to explain in words, see Indra's Pearls chapter 3
+          # I've reduced the formulas significantly by using the unit circle for this test
+          center = subject.transform_point( -1/(d/c).conj )
+          radius = (center - subject.transform_point(1)).abs
+          subject.transform_circle(unit_circle).should == Circle.new(center,radius)
+        end
+        
+        it 'should not change the circle if the transformation is the identity transformation' do
+          MobiusTransformation::IDENTITY.transform_circle(unit_circle).should == unit_circle
+        end
+      end
+
+      describe '#[]' do      
+        it 'should #transform_circle when the argument is a circle' do
+          subject[unit_circle].should == subject.transform_circle(unit_circle)
+        end
+
+        it 'should #transform_point when the argument is a Point' do
+          subject[p1].should == subject.transform_point(p1)
+        end      
       end
     end
     
