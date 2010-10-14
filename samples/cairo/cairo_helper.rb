@@ -8,6 +8,8 @@ require 'indras_rubies'
 def size(width,height)
   @surface = Cairo::ImageSurface.new(width,height)
   @canvas = Cairo::Context.new(@surface)
+  background(1,1,1,1)
+  stroke(0,0,0,1)
 end  
 
 # Set the background color.
@@ -37,6 +39,17 @@ end
 def circle(x,y,radius)
   @canvas.arc(x, y, radius, -Math::PI, Math::PI)
   @canvas.stroke
+end
+
+def draw(*shape)
+  case shape
+  when Circle
+    circle(shape.x, shape.y, shape.radius)
+  when Array
+    shape.each{|s| draw s }
+  else
+    raise ArgumentError
+  end
 end
 
 # Save the current drawing context as a png file

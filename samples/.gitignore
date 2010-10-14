@@ -1,0 +1,3 @@
+# Having problems because I need JRuby 1.9 support, and even then JRuby's Complex number behavior is slightly different and causing problems. Will have to revisit these later:
+ruby-processing
+
