@@ -42,8 +42,9 @@ def circle(x,y,radius)
 end
 
 def draw(*shape)
+  shape = shape[0] if shape.length==1
   case shape
-  when Circle
+  when Indra::Circle
     circle(shape.x, shape.y, shape.radius)
   when Array
     shape.each{|s| draw s }
