@@ -62,6 +62,43 @@ module Indra
         lambda{ subject.generators.delete generator_names[0] }.should raise_error
       end
     end
+    
+    describe '#next_words_for' do
+      it 'should generate all possible reduced words with one more transformation' do
+        subject.next_words_for('aB').should =~ ['aBa', 'aBA', 'aBB']
+      end
+      it 'should return the generator names when given the empty word as an empty string' do
+        subject.next_words_for('').should =~ subject.generator_names
+      end
+      it 'should return the generator names when given the empty word as an empty string' do
+        subject.next_words_for('').should =~ subject.generator_names
+      end      
+    end
+
+    describe '#words(max_length)' do
+      it 'should return only the empty word when max_length is 0' do
+        subject.words(0).should == ['']        
+      end
+      it 'should return the empty word plus generator names when max_length is 1' do
+        subject.words(1).should =~ [''] + subject.generator_names
+      end
+      it 'should return all reduced words up to max_length' do
+        subject.words(2).should =~ ['', 'a', 'A', 'b', 'B', 
+                                    'aa', 'ab', 'aB',
+                                    'AA', 'Ab', 'AB',
+                                    'ba', 'bA', 'bb',
+                                    'Ba', 'BA', 'BB']       
+        subject.words(4).length.should == 1 + 4*3**0 + 4*3**1 + 4*3**2 + 4*3**3
+      end
+      it 'should never return a non-reduced word (a word where any consecutive transformations are inverses)' do
+        for word in subject.words(3)
+          word.should_not =~ /aA/
+          word.should_not =~ /Aa/
+          word.should_not =~ /bB/
+          word.should_not =~ /Bb/          
+        end
+      end
+    end
 
   end
   
