@@ -10,6 +10,12 @@ module Indra
     let(:inverse_transformations) { [t1.inverse,t2.inverse] }
     subject { SchottkyGroup.new(*transformations) }
   
+    describe 'new' do
+      it 'should allow up to 26 transformations' do
+        SchottkyGroup.new(*Array.new(26,t1))
+      end
+    end
+  
     describe '#transformations' do
       it 'should be the list transformations used to initialize the object' do
         subject.transformations.should == transformations
