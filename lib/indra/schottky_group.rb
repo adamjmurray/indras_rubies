@@ -59,6 +59,23 @@ module Indra
 
        @words_by_length.values.flatten
      end
+     
+     # The composed series of transformations for a given word in this group
+     def transformation_for(word)
+       @composed_transformations ||= {}
+       transformation = @composed_transformations[word]
+       if transformation.nil?
+         if word.nil? or word.empty?
+           transformation = MobiusTransformation::IDENTITY
+         elsif word.length == 1
+           transformation = @generators[word]
+         else
+           transformation = transformation_for(word.chop) * @generators[word[-1]]
+         end
+         @composed_transformations[word] = transformation
+       end
+       transformation
+     end
     
   end
   
