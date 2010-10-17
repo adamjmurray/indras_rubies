@@ -10,7 +10,9 @@ background 1,1,1,1 # white
 translate WIDTH/2, HEIGHT/2
 scale 95
 
-stroke 0,0,0,0.2 # semi-transparent black
+no_fill
+stroke_weight 1
+stroke_color 0,0,0,0.1 # semi-transparent black
 
 a,b,c,d = 1-5*I, 0.04, 0.39, 0.99-5*I
 center = Point(1.16,0.91)

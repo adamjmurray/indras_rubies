@@ -5,7 +5,9 @@ include Indra
 
 size 500,500
 translate 170,100
-stroke 0,0,0,0.2 # semi-transparent black
+
+no_fill
+stroke_color 0,0,0,0.2 # semi-transparent black
 
 c = Circle.new( Point(-490,-360), 200 )
 t = MobiusTransformation.new( 1.18+0.125*I, 5+3*I, 0, 1.199 )
