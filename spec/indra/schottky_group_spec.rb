@@ -93,26 +93,25 @@ module Indra
     end
     
 
-    describe '#words(max_length)' do
-      it 'should return only the empty word when max_length is 0' do
-        subject.words(0).should == ['']        
+    describe '#word_of_length' do
+      it 'should return only the empty word when length is 0' do
+        subject.words_of_length(0).should == ['']        
       end
       
-      it 'should return the empty word plus generator names when max_length is 1' do
-        subject.words(1).should =~ [''] + subject.generator_names
+      it 'should return the generator names for length is 1' do
+        subject.words_of_length(1).should =~subject.generator_names
       end
       
-      it 'should return all reduced words up to max_length' do
-        subject.words(2).should =~ ['', 'a', 'A', 'b', 'B', 
-                                    'aa', 'ab', 'aB',
+      it 'should return all reduced words for lengths > 1' do
+        subject.words_of_length(2).should =~ ['aa', 'ab', 'aB',
                                     'AA', 'Ab', 'AB',
                                     'ba', 'bA', 'bb',
                                     'Ba', 'BA', 'BB']       
-        subject.words(4).length.should == 1 + 4*3**0 + 4*3**1 + 4*3**2 + 4*3**3
+        subject.words_of_length(4).length.should == 4*3**3
       end
       
       it 'should never return a non-reduced word (a word where any consecutive transformations are inverses)' do
-        for word in subject.words(3)
+        for word in subject.words_of_length(3)
           word.should_not =~ /aA/
           word.should_not =~ /Aa/
           word.should_not =~ /bB/

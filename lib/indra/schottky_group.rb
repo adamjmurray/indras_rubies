@@ -46,19 +46,21 @@ module Indra
     end
     
     # All reduced generator words up to a certain length.
-     def words(max_length)
+     def words_of_length(length)
        @generated_word_lengths ||= [0]
        @words_by_length ||= {0 => ['']}
 
-       while @generated_word_lengths[-1] < max_length        
+       while @generated_word_lengths[-1] < length        
          last_length = @generated_word_lengths[-1] 
          next_length = last_length + 1
          @words_by_length[next_length] = @words_by_length[last_length].collect{|word| next_words_for word }.flatten
          @generated_word_lengths << next_length
        end
 
-       @words_by_length.values.flatten
+       @words_by_length[length]
      end
+     
+     
      
      # The composed series of transformations for a given word in this group
      def transformation_for(word)
